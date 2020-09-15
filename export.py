@@ -4,7 +4,10 @@ import ntpath
 
 import bpy
 
-from progress_report import ProgressReport, ProgressReportSubstep
+from bpy_extras.wm_utils.progress_report import (
+    ProgressReport,
+    ProgressReportSubstep,
+)
 
 def path_leaf(path):
     head, tail = ntpath.split(path)
