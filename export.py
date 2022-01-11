@@ -14,7 +14,15 @@ def path_leaf(path):
 def name_compat(name):
     return 'None' if name is None else name.replace(' ', '_')
 
-def save(context, filepath, use_selection=True, provides_mtl=False):
+def formatName(name: str, dataName, str):
+    if name == dataName:
+        formatName = name_compat(name)
+    else:
+        formatName = '%s_%s' % (name_compat(name), name_compat(dataName))
+    
+    return formatName
+
+def save(context, filepath, export_parents=False, use_selection=True, provides_mtl=False):
     with ProgressReport(context.window_manager) as progress:
         scene = context.scene
 
@@ -25,12 +33,12 @@ def save(context, filepath, use_selection=True, provides_mtl=False):
         objects = context.selected_objects if use_selection else scene.objects
 
         progress.enter_substeps(1)
-        write_file(context, filepath, objects, scene, provides_mtl, progress)
+        write_file(context, filepath, objects, scene, export_parents, provides_mtl, progress)
         progress.leave_substeps()
 
     return {'FINISHED'}
 
-def write_file(context, filepath, objects, scene, provides_mtl, progress=ProgressReport()):
+def write_file(context, filepath, objects, scene, export_parents, provides_mtl, progress=ProgressReport()):
     # bpy.ops.object.select_all(action='DESELECT')
 
     with ProgressReportSubstep(progress, 2, "JSON export path: %r" % filepath, "JSON export finished") as subprogress1:
@@ -49,10 +57,12 @@ def write_file(context, filepath, objects, scene, provides_mtl, progress=Progres
                 name1 = obj.name
                 name2 = obj.data.name
 
-                if name1 == name2:
-                    name = name_compat(name1)
+                name = formatName(name1, name2)
+                
+                if export_parents and obj.parent != None:
+                    parentName = formatName(obj.parent.name, obj.parent.data.name)
                 else:
-                    name = '%s_%s' % (name_compat(name1), name_compat(name2))
+                    parentName = 'anchor'
                 
                 cursor = obj.matrix_world.translation
                 x = cursor[0]
@@ -62,7 +72,7 @@ def write_file(context, filepath, objects, scene, provides_mtl, progress=Progres
                 limb = { 
                     'origin': [x, y, -z],
                     'smooth': True,
-                    'parent': obj.parent.name
+                    'parent': parentName
                 }
 
                 transform = {

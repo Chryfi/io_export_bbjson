@@ -25,6 +25,7 @@ class ExportOBJ(bpy.types.Operator, ExportHelper):
     filename_ext = ".json"
     filter_glob = StringProperty(default="*.json", options={'HIDDEN'})
     use_selection = BoolProperty(name="Selection Only", description="Export selected objects only", default=False)
+    export_parents = BoolProperty(name="Export parent names", description="Save the parent names of the limbs. If deactivated, an anchor limb will be used as parent for every limb.", default=False)
     provides_mtl = BoolProperty(name="Provides Materials", description="Mark 'provides_mtl' as True", default=False)
     path_mode = path_reference_mode
     check_extension = True
