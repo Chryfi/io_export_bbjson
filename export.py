@@ -43,11 +43,15 @@ def write_file(context, filepath, objects, scene, export_parents, provides_mtl, 
 
     with ProgressReportSubstep(progress, 2, "JSON export path: %r" % filepath, "JSON export finished") as subprogress1:
         with open(filepath, "w", encoding="utf8", newline="\n") as f:
-            limbs = {
-                'anchor': {
-                    'opacity': 0
+            if export_parents:
+                limbs = {
                 }
-            }
+            else:
+                limbs = {
+                    'anchor': {
+                        'opacity': 0
+                    }
+                }
             pose = {}
 
             for obj in objects:
@@ -62,7 +66,7 @@ def write_file(context, filepath, objects, scene, export_parents, provides_mtl, 
                 if export_parents and obj.parent != None:
                     parentName = formatName(obj.parent.name, obj.parent.data.name)
                 else:
-                    parentName = 'anchor'
+                    parentName = ''
                 
                 cursor = obj.matrix_world.translation
                 x = cursor[0]
