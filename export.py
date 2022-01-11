@@ -62,7 +62,7 @@ def write_file(context, filepath, objects, scene, provides_mtl, progress=Progres
                 limb = { 
                     'origin': [x, y, -z],
                     'smooth': True,
-                    'parent': 'anchor'
+                    'parent': obj.parent.name
                 }
 
                 transform = {
